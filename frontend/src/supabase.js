@@ -16,3 +16,9 @@ export async function getSignedUrl(bucket, path) {
   if (error) throw error
   return data.signedUrl
 }
+
+export async function downloadFile(bucket, path) {
+  const { data, error } = await supabase.storage.from(bucket).download(path)
+  if (error) throw error
+  return data // Blob
+}

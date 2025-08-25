@@ -1,4 +1,4 @@
-export function createPreviewSVG(elements) {
+export function createPreviewSVG(elements, meta = {}) {
   const shapes = elements.map(el => {
     if (el.type === 'rectangle') {
       return `<rect x="${el.x}" y="${el.y}" width="${el.width}" height="${el.height}" stroke="black" fill="none"/>`
@@ -14,8 +14,9 @@ export function createPreviewSVG(elements) {
   }).join('\n')
 
   const metadata = {
-    version: new Date().toISOString(),
-    elementsCount: elements.length
+    generatedAt: new Date().toISOString(),
+    elementsCount: elements.length,
+    ...meta
   }
 
   return `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800">\n  ${shapes}\n  <metadata>${JSON.stringify(metadata)}</metadata>\n</svg>`
