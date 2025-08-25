@@ -14,7 +14,7 @@
     "@excalidraw/excalidraw": "^0.17.0",
     "yjs": "^13.6.0",
     "y-websocket": "^1.5.0",
-    "y-indexeddb": "^1.0.6",
+    "y-indexeddb": "1.0.3",
     "@supabase/supabase-js": "^2.42.0"
   },
   "devDependencies": {
