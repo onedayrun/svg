@@ -26,7 +26,9 @@ Now also supports:
    cat > .env << 'EOF'
    VITE_SUPABASE_URL=https://<your>.supabase.co
    VITE_SUPABASE_ANON_KEY=<anon-key>
-   # optional: WebSocket server (defaults to ws://localhost:1234)
+   # optional: WebSocket server
+   # Local dev backend default: ws://localhost:1234
+   # Docker default (baked via compose build arg): ws://localhost:9134
    VITE_YWS_URL=ws://localhost:1234
    EOF
    npm run dev
@@ -65,7 +67,7 @@ xdg-open "http://localhost:5173/?project=my-project&room=my-room"
    make docker-build   # wymagane po zmianie .env (VITE_* bake'owane do bundla)
    make docker-up
    ```
-3. Wejdź na: `http://localhost:${FRONTEND_PORT}/?project=my-project&room=my-room` (domyślnie 8088)
+3. Wejdź na: `http://localhost:${FRONTEND_PORT}/?project=my-project&room=my-room` (domyślnie 8089)
 4. Backend (Yjs ws): `ws://localhost:${BACKEND_PORT}` (domyślnie 9134)
 
 Uwaga: wewnątrz sieci Docker frontend łączy się z backendem przez `VITE_YWS_URL` ustawione w build args; na produkcji zalecane jest podawanie publicznego adresu ws/https.
@@ -76,7 +78,7 @@ Opcja A (korzysta z dev serwerów):
 ```bash
 make electron-install
 # upewnij się, że frontend działa (np. make dev-frontend) lub Docker (make docker-up)
-ELECTRON_APP_URL=http://localhost:${FRONTEND_PORT:-8088} make electron-start
+ELECTRON_APP_URL=http://localhost:${FRONTEND_PORT:-8089} make electron-start
 ```
 
 Opcja B (statyczne pliki):
@@ -108,7 +110,7 @@ make dev-backend    # ws :1234 lokalnie
 make dev-frontend   # Vite :5173 lokalnie
 make docker-build
 make docker-up
-make docker-down
+make docker-down   # lub: make stop
 make docker-logs
 make frontend-build
 make electron-install

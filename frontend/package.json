@@ -11,7 +11,7 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@excalidraw/excalidraw": "^0.17.0",
+    "@excalidraw/excalidraw": "^0.18.0",
     "yjs": "^13.6.0",
     "y-websocket": "^1.5.0",
     "y-indexeddb": "^9.0.12",

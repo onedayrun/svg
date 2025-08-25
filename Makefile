@@ -1,5 +1,7 @@
 # Alias: stop containers (same as docker-down)
 stop: docker-down
+# Alias: start containers (same as docker-up)
+start: docker-up
 # Simple Makefile for local dev and Docker workflows
 
 .PHONY: help install-backend install-frontend dev-backend dev-frontend frontend-build docker-build docker-up docker-down docker-logs docker-restart dev electron-install electron-start electron-prepare-dist electron-release-linux electron-release-linux-all electron-release kill-port kill-ports stop-all stop
@@ -91,6 +93,7 @@ electron-release: electron-release-linux
 
 # Kill a single port listener: make kill-port PORT=1234
 kill-port:
+	@if [ -z "$${PORT}" ]; then echo "Usage: make kill-port PORT=<p>"; exit 1; fi
 	PORT=$${PORT} bash scripts/kill-port.sh
 
 # Kill common dev ports

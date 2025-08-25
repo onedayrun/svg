@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-FRONTEND_PORT="${FRONTEND_PORT:-8088}"
+FRONTEND_PORT="${FRONTEND_PORT:-8089}"
 BACKEND_PORT="${BACKEND_PORT:-9134}"
 PORTS=("$FRONTEND_PORT" "$BACKEND_PORT" 5173 1234)
 for p in "${PORTS[@]}"; do

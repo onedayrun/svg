@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { Excalidraw } from '@excalidraw/excalidraw'
-import '@excalidraw/excalidraw/dist/excalidraw.css'
+import '@excalidraw/excalidraw/index.css'
 import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import { IndexeddbPersistence } from 'y-indexeddb'

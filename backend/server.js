@@ -1,6 +1,6 @@
 import express from 'express'
 import { WebSocketServer } from 'ws'
-import setupWSConnection from 'y-websocket/bin/utils.js'
+import { setupWSConnection } from 'y-websocket/bin/utils'
 import * as http from 'http'
 import cors from 'cors'
 
