@@ -50,14 +50,17 @@ http://localhost:5173/?project=my-project&room=my-room
 
 ## Docker
 
-1. Skopiuj `.env.example` do `.env` (w root) i uzupełnij `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
+1. Skopiuj `.env.example` do `.env` (w root) i uzupełnij:
+   - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
+   - porty: `FRONTEND_PORT`, `BACKEND_PORT`, `BACKEND_INTERNAL_PORT`
+   - `VITE_YWS_URL` (powinien wskazywać na hostowy port backendu, np. `ws://localhost:9134`)
 2. Zbuduj i uruchom:
-   - `make docker-build`
+   - `make docker-build` (wymagane po zmianie `.env`, bo frontend kompiluje VITE_* do bundla)
    - `make docker-up`
-3. Wejdź na: `http://localhost:8080/?project=my-project&room=my-room`
-4. Backend (Yjs ws): `ws://localhost:1234`
+3. Wejdź na: `http://localhost:${FRONTEND_PORT}/?project=my-project&room=my-room` (domyślnie 8088)
+4. Backend (Yjs ws): `ws://localhost:${BACKEND_PORT}` (domyślnie 9134)
 
-Uwaga: `VITE_YWS_URL` w `docker-compose.yml` domyślnie wskazuje na `ws://backend:1234` (wewnątrz sieci dockerowej).
+Uwaga: wewnątrz sieci Docker frontend łączy się z backendem przez `VITE_YWS_URL` ustawione w build args; na produkcji zalecane jest podawanie publicznego adresu ws/https.
 
 ## Electron (desktop)
 

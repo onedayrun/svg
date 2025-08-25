@@ -14,7 +14,7 @@ help:
 	@echo "  docker-down       - stop services"
 	@echo "  docker-logs       - follow logs"
 	@echo "  docker-restart    - restart services"
-	@echo "  dev               - docker compose up (frontend:8080, backend:1234)"
+	@echo "  dev               - docker compose up (ports from .env: FRONTEND_PORT, BACKEND_PORT)"
 	@echo "  electron-install  - install Electron deps"
 	@echo "  electron-start    - start Electron app (ELECTRON_APP_URL to point to URL)"
 
