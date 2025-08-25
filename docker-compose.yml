@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  backend:
+    build: ./backend
+    container_name: collab-backend
+    ports:
+      - "1234:1234"
+    environment:
+      - PORT=1234
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_YWS_URL: ${VITE_YWS_URL:-ws://backend:1234}
+    container_name: collab-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
