@@ -1,6 +1,8 @@
+# Alias: stop containers (same as docker-down)
+stop: docker-down
 # Simple Makefile for local dev and Docker workflows
 
-.PHONY: help install-backend install-frontend dev-backend dev-frontend frontend-build docker-build docker-up docker-down docker-logs docker-restart dev electron-install electron-start electron-prepare-dist electron-release-linux electron-release-linux-all electron-release kill-port kill-ports stop-all
+.PHONY: help install-backend install-frontend dev-backend dev-frontend frontend-build docker-build docker-up docker-down docker-logs docker-restart dev electron-install electron-start electron-prepare-dist electron-release-linux electron-release-linux-all electron-release kill-port kill-ports stop-all stop
 
 # Defaults for ports if not provided by environment
 FRONTEND_PORT ?= 8088
@@ -17,6 +19,7 @@ help:
 	@echo "  docker-build      - build Docker images"
 	@echo "  docker-up         - start services in background"
 	@echo "  docker-down       - stop services"
+	@echo "  stop              - alias for docker-down"
 	@echo "  docker-logs       - follow logs"
 	@echo "  docker-restart    - restart services"
 	@echo "  dev               - docker compose up (ports from .env: FRONTEND_PORT, BACKEND_PORT)"
@@ -30,97 +33,70 @@ help:
 	@echo "  stop-all          - docker compose down + kill-ports"
 
 install-backend:
-	cd backend && npm install
+	bash scripts/install-backend.sh
 
 install-frontend:
-	cd frontend && npm install
+	bash scripts/install-frontend.sh
 
 dev-backend:
-	cd backend && npm start
+	bash scripts/dev-backend.sh
 
 dev-frontend:
-	cd frontend && npm run dev
+	bash scripts/dev-frontend.sh
 
 frontend-build:
-	cd frontend && npm run build
+	bash scripts/frontend-build.sh
 
 docker-build:
-	docker compose build
+	bash scripts/docker-build.sh
 
 docker-up:
-	docker compose up -d
+	bash scripts/docker-up.sh
 
 docker-down:
-	docker compose down
+	bash scripts/docker-down.sh
 
 docker-logs:
-	docker compose logs -f
+	bash scripts/docker-logs.sh
 
 docker-restart:
-	docker compose restart
+	bash scripts/docker-restart.sh
 
 dev: docker-up
 
 electron-install:
-	cd electron && npm install
+	bash scripts/electron-install.sh
 
 # Run with optional ELECTRON_APP_URL, e.g. ELECTRON_APP_URL=http://localhost:8080 make electron-start
 electron-start:
-	cd electron && ELECTRON_APP_URL=$${ELECTRON_APP_URL} npm start
+	ELECTRON_APP_URL=$${ELECTRON_APP_URL} bash scripts/electron-start.sh
 
 # Build frontend and place assets into electron/dist for offline packaged app
 electron-prepare-dist:
-	cd frontend && (npm ci || npm install) && npm run build
-	rm -rf electron/dist
-	mkdir -p electron/dist
-	cp -r frontend/dist/* electron/dist/
+	bash scripts/electron-prepare-dist.sh
 
 # Build a Linux release using electron-packager.
 # Usage:
 #   make electron-release-linux            # x64 by default
 #   ARCH=arm64 make electron-release-linux # build arm64
 electron-release-linux: electron-prepare-dist
-	npx --yes electron-packager electron CollabMVP \
-	  --platform=linux --arch=$${ARCH:-x64} \
-	  --out=release --overwrite
+	ARCH=$${ARCH} bash scripts/electron-release-linux.sh
 
 # Build both linux x64 and arm64
 electron-release-linux-all: electron-prepare-dist
-	for arch in x64 arm64; do \
-	  npx --yes electron-packager electron CollabMVP --platform=linux --arch=$$arch --out=release --overwrite; \
-	done
+	bash scripts/electron-release-linux-all.sh
 
 # Alias
 electron-release: electron-release-linux
 
 # Kill a single port listener: make kill-port PORT=1234
 kill-port:
-	@if [ -z "$$PORT" ]; then echo "Usage: make kill-port PORT=1234"; exit 1; fi; \
-	PIDS=$$(lsof -t -iTCP:$$PORT -sTCP:LISTEN 2>/dev/null || true); \
-	if [ -n "$$PIDS" ]; then \
-		echo "Killing PIDs $$PIDS on port $$PORT"; \
-		kill -9 $$PIDS || true; \
-	else \
-		echo "No listeners on $$PORT"; \
-	fi
+	PORT=$${PORT} bash scripts/kill-port.sh
 
 # Kill common dev ports
 kill-ports:
-	@PORTS="$(FRONTEND_PORT) $(BACKEND_PORT) 5173 1234"; \
-	for p in $$PORTS; do \
-		if [ -n "$$p" ]; then \
-			echo "Checking port $$p"; \
-			PIDS=$$(lsof -t -iTCP:$$p -sTCP:LISTEN 2>/dev/null || true); \
-			if [ -n "$$PIDS" ]; then \
-				echo "Killing PIDs $$PIDS on port $$p"; \
-				kill -9 $$PIDS || true; \
-			else \
-				echo "No listeners on $$p"; \
-			fi; \
-		fi; \
-	done
+	FRONTEND_PORT=$${FRONTEND_PORT} BACKEND_PORT=$${BACKEND_PORT} bash scripts/kill-ports.sh
 
 # Stop docker services and free common dev ports
 stop-all:
-	- docker compose down
-	$(MAKE) kill-ports
+	FRONTEND_PORT=$${FRONTEND_PORT} BACKEND_PORT=$${BACKEND_PORT} bash scripts/stop-all.sh

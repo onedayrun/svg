@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
-import Excalidraw from '@excalidraw/excalidraw'
+import { Excalidraw } from '@excalidraw/excalidraw'
+import '@excalidraw/excalidraw/dist/excalidraw.css'
 import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import { IndexeddbPersistence } from 'y-indexeddb'
@@ -16,7 +17,7 @@ export default function App() {
     const params = new URLSearchParams(window.location.search)
     const projectId = params.get('project') || 'demo-project'
     const roomId = params.get('room') || projectId
-    const ywsUrl = import.meta.env.VITE_YWS_URL || 'ws://localhost:1234'
+    const ywsUrl = import.meta.env.VITE_YWS_URL || 'ws://localhost:9134'
 
     // local persistence keyed per project
     new IndexeddbPersistence(projectId, ydoc)
