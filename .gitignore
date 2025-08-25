@@ -1,6 +1,9 @@
 .idea
 .env
 venv
+package-lock.json
+release/
+
 # Logs
 logs
 *.log

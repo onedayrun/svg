@@ -1,6 +1,11 @@
 # Simple Makefile for local dev and Docker workflows
 
-.PHONY: help install-backend install-frontend dev-backend dev-frontend frontend-build docker-build docker-up docker-down docker-logs docker-restart dev electron-install electron-start electron-prepare-dist electron-release-linux electron-release-linux-all electron-release
+.PHONY: help install-backend install-frontend dev-backend dev-frontend frontend-build docker-build docker-up docker-down docker-logs docker-restart dev electron-install electron-start electron-prepare-dist electron-release-linux electron-release-linux-all electron-release kill-port kill-ports stop-all
+
+# Defaults for ports if not provided by environment
+FRONTEND_PORT ?= 8088
+BACKEND_PORT ?= 9134
+BACKEND_INTERNAL_PORT ?= 1234
 
 help:
 	@echo "Targets:"
@@ -20,6 +25,9 @@ help:
 	@echo "  electron-prepare-dist - build frontend and copy into electron/dist"
 	@echo "  electron-release-linux - package Electron app for Linux (ARCH env: x64|arm64, default x64)"
 	@echo "  electron-release-linux-all - package for linux x64 and arm64"
+	@echo "  kill-port PORT=<p> - kill any process listening on TCP port <p>"
+	@echo "  kill-ports        - kill common dev ports ($(FRONTEND_PORT), $(BACKEND_PORT), 5173, 1234)"
+	@echo "  stop-all          - docker compose down + kill-ports"
 
 install-backend:
 	cd backend && npm install
@@ -84,3 +92,35 @@ electron-release-linux-all: electron-prepare-dist
 
 # Alias
 electron-release: electron-release-linux
+
+# Kill a single port listener: make kill-port PORT=1234
+kill-port:
+	@if [ -z "$$PORT" ]; then echo "Usage: make kill-port PORT=1234"; exit 1; fi; \
+	PIDS=$$(lsof -t -iTCP:$$PORT -sTCP:LISTEN 2>/dev/null || true); \
+	if [ -n "$$PIDS" ]; then \
+		echo "Killing PIDs $$PIDS on port $$PORT"; \
+		kill -9 $$PIDS || true; \
+	else \
+		echo "No listeners on $$PORT"; \
+	fi
+
+# Kill common dev ports
+kill-ports:
+	@PORTS="$(FRONTEND_PORT) $(BACKEND_PORT) 5173 1234"; \
+	for p in $$PORTS; do \
+		if [ -n "$$p" ]; then \
+			echo "Checking port $$p"; \
+			PIDS=$$(lsof -t -iTCP:$$p -sTCP:LISTEN 2>/dev/null || true); \
+			if [ -n "$$PIDS" ]; then \
+				echo "Killing PIDs $$PIDS on port $$p"; \
+				kill -9 $$PIDS || true; \
+			else \
+				echo "No listeners on $$p"; \
+			fi; \
+		fi; \
+	done
+
+# Stop docker services and free common dev ports
+stop-all:
+	- docker compose down
+	$(MAKE) kill-ports
