@@ -5,7 +5,7 @@ stop: docker-down
 .PHONY: help install-backend install-frontend dev-backend dev-frontend frontend-build docker-build docker-up docker-down docker-logs docker-restart dev electron-install electron-start electron-prepare-dist electron-release-linux electron-release-linux-all electron-release kill-port kill-ports stop-all stop
 
 # Defaults for ports if not provided by environment
-FRONTEND_PORT ?= 8088
+FRONTEND_PORT ?= 8089
 BACKEND_PORT ?= 9134
 BACKEND_INTERNAL_PORT ?= 1234
 
