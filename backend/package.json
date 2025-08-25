@@ -1,0 +1,13 @@
+{
+  "name": "collab-mvp-backend",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "ws": "^8.13.0",
+    "y-websocket": "^1.5.0"
+  }
+}
