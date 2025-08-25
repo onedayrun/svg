@@ -12,19 +12,25 @@ Now also supports:
 ## Quickstart (local)
 
 1. Backend
-   - cd backend
-   - npm install
-   - npm start
+   ```bash
+   cd backend
+   npm install
+   npm start
+   ```
 
 2. Frontend
-   - cd frontend
-   - npm install
-   - create a `.env` file:
-     VITE_SUPABASE_URL=https://<your>.supabase.co
-     VITE_SUPABASE_ANON_KEY=<anon-key>
-     # optional: WebSocket server (defaults to ws://localhost:1234)
-     VITE_YWS_URL=ws://localhost:1234
-   - npm run dev
+   ```bash
+   cd frontend
+   npm install
+   # create .env
+   cat > .env << 'EOF'
+   VITE_SUPABASE_URL=https://<your>.supabase.co
+   VITE_SUPABASE_ANON_KEY=<anon-key>
+   # optional: WebSocket server (defaults to ws://localhost:1234)
+   VITE_YWS_URL=ws://localhost:1234
+   EOF
+   npm run dev
+   ```
 
 3. Supabase
    - create a storage bucket named `projects`
@@ -37,8 +43,8 @@ Now also supports:
   - room ID (for Yjs websocket room, defaults to project): `&room=my-room`
 
 Example:
-```
-http://localhost:5173/?project=my-project&room=my-room
+```bash
+xdg-open "http://localhost:5173/?project=my-project&room=my-room"
 ```
 
 ## Snapshot preload
@@ -55,8 +61,10 @@ http://localhost:5173/?project=my-project&room=my-room
    - porty: `FRONTEND_PORT`, `BACKEND_PORT`, `BACKEND_INTERNAL_PORT`
    - `VITE_YWS_URL` (powinien wskazywać na hostowy port backendu, np. `ws://localhost:9134`)
 2. Zbuduj i uruchom:
-   - `make docker-build` (wymagane po zmianie `.env`, bo frontend kompiluje VITE_* do bundla)
-   - `make docker-up`
+   ```bash
+   make docker-build   # wymagane po zmianie .env (VITE_* bake'owane do bundla)
+   make docker-up
+   ```
 3. Wejdź na: `http://localhost:${FRONTEND_PORT}/?project=my-project&room=my-room` (domyślnie 8088)
 4. Backend (Yjs ws): `ws://localhost:${BACKEND_PORT}` (domyślnie 9134)
 
@@ -65,13 +73,17 @@ Uwaga: wewnątrz sieci Docker frontend łączy się z backendem przez `VITE_YWS_
 ## Electron (desktop)
 
 Opcja A (korzysta z dev serwerów):
-- `make electron-install`
-- Upewnij się, że frontend działa (np. `make dev-frontend`) lub Docker (`make docker-up`).
-- Uruchom: `ELECTRON_APP_URL=http://localhost:8080 make electron-start`
+```bash
+make electron-install
+# upewnij się, że frontend działa (np. make dev-frontend) lub Docker (make docker-up)
+ELECTRON_APP_URL=http://localhost:${FRONTEND_PORT:-8088} make electron-start
+```
 
 Opcja B (statyczne pliki):
-- `make frontend-build`
-- `make electron-install && make electron-start`
+```bash
+make frontend-build
+make electron-install && make electron-start
+```
 
 W menu File → Open Preview SVG… możesz wskazać `preview.svg`. Aplikacja odczyta `<metadata>` i załaduje projekt (przez `?project=...`).
 
@@ -82,17 +94,26 @@ Endpointy pomocne przy wycenie i integracjach:
 - POST `/preview/metadata` (body: cały SVG, `Content-Type: image/svg+xml`)
 
 Przykłady:
-```
-curl "http://localhost:1234/preview/metadata?url=https://.../preview.svg"
-curl -X POST -H "Content-Type: image/svg+xml" --data-binary @preview.svg http://localhost:1234/preview/metadata
+```bash
+curl "http://localhost:${BACKEND_PORT:-9134}/preview/metadata?url=https://.../preview.svg"
+curl -X POST -H "Content-Type: image/svg+xml" --data-binary @preview.svg \
+  http://localhost:${BACKEND_PORT:-9134}/preview/metadata
 ```
 
 ## Makefile skróty
 
-- `make dev-backend` / `make dev-frontend`
-- `make docker-build` / `make docker-up` / `make docker-down` / `make docker-logs`
-- `make frontend-build`
-- `make electron-install` / `make electron-start`
+```bash
+make help
+make dev-backend    # ws :1234 lokalnie
+make dev-frontend   # Vite :5173 lokalnie
+make docker-build
+make docker-up
+make docker-down
+make docker-logs
+make frontend-build
+make electron-install
+make electron-start
+```
 
 ## Notes
 - This is a minimal starting point. For production:

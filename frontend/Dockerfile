@@ -12,7 +12,11 @@ ENV VITE_YWS_URL=${VITE_YWS_URL}
 
 # Dependencies
 COPY package*.json ./
-RUN npm ci || npm install
+RUN if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then \
+      npm ci; \
+    else \
+      npm install; \
+    fi
 
 # Sources
 COPY . .

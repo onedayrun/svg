@@ -24,12 +24,17 @@ function createWindow() {
   })
 
   const appUrl = process.env.ELECTRON_APP_URL || null
+  // Path when running from monorepo (dev/build without packaging)
   const distIndex = path.join(__dirname, '..', 'frontend', 'dist', 'index.html')
+  // Path when running a packaged app with frontend bundled inside electron/dist
+  const packagedIndex = path.join(__dirname, 'dist', 'index.html')
 
   function loadApp(projectId) {
     if (appUrl) {
       const url = projectId ? `${appUrl}?project=${encodeURIComponent(projectId)}` : appUrl
       win.loadURL(url)
+    } else if (fs.existsSync(packagedIndex)) {
+      win.loadFile(packagedIndex, { search: projectId ? `?project=${encodeURIComponent(projectId)}` : '' })
     } else if (fs.existsSync(distIndex)) {
       win.loadFile(distIndex, { search: projectId ? `?project=${encodeURIComponent(projectId)}` : '' })
     } else {
