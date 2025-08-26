@@ -6,6 +6,9 @@ services:
       - "${BACKEND_PORT:-9134}:${BACKEND_INTERNAL_PORT:-1234}"
     environment:
       - PORT=${BACKEND_INTERNAL_PORT:-1234}
+    volumes:
+      - ./data/snapshots:/app/snapshots
+      - ./data/previews:/app/previews
     restart: unless-stopped
 
   frontend:
@@ -15,6 +18,8 @@ services:
         VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-http://localhost:54321}
         VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
         VITE_YWS_URL: ${VITE_YWS_URL:-ws://localhost:9134}
+        VITE_STORAGE_MODE: ${VITE_STORAGE_MODE:-backend}
+        VITE_BACKEND_HTTP_URL: ${VITE_BACKEND_HTTP_URL:-http://localhost:9134}
     container_name: collab-frontend
     ports:
       - "${FRONTEND_PORT:-8089}:80"
